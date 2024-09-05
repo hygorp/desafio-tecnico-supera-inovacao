@@ -3,6 +3,7 @@ package org.hygorp.listmanager.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hygorp.listmanager.enums.ItemPriorityEnum;
+import org.hygorp.listmanager.enums.ItemStateEnum;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -32,4 +33,15 @@ public class ItemEntity implements Serializable {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ItemPriorityEnum priority;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ItemStateEnum state;
+
+    public ItemEntity(String title, String description, ItemPriorityEnum priority, ItemStateEnum state) {
+        this.title = title;
+        this.description = description;
+        this.priority = priority;
+        this.state = state;
+    }
 }

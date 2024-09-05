@@ -5,7 +5,8 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,12 +32,12 @@ public class TaskEntity implements Serializable {
     private String description;
 
     @Column(nullable = false)
-    private Instant createdAt;
-    
-    private Instant updatedAt;
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 
     @Column(nullable = false)
-    private Instant expiresAt;
+    private LocalDateTime expiresAt;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
@@ -44,5 +45,33 @@ public class TaskEntity implements Serializable {
             joinColumns = @JoinColumn(name = "task_id"),
             inverseJoinColumns = @JoinColumn(name = "item_id")
     )
-    private Set<TaskEntity> tasks;
+    private Set<ItemEntity> items = new HashSet<>();
+
+    public TaskEntity(String title, String description, LocalDateTime expiresAt) {
+        this.title = title;
+        this.description = description;
+        this.expiresAt = expiresAt;
+    }
+
+    public void addItem(ItemEntity item) {
+        this.items.add(item);
+    }
+
+    public void removeItem(ItemEntity item) {
+        this.items.remove(item);
+    }
+
+    public void clearItems() {
+        this.items.clear();
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
