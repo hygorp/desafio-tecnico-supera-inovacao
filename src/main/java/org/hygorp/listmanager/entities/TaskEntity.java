@@ -7,6 +7,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -55,14 +56,39 @@ public class TaskEntity implements Serializable {
 
     public void addItem(ItemEntity item) {
         this.items.add(item);
+        setUpdatedAt(LocalDateTime.now());
+    }
+
+    public void updateItem(ItemEntity item) {
+        for (ItemEntity savedItem : items) {
+            if (savedItem.getId().equals(item.getId())) {
+                if (!Objects.equals(savedItem.getTitle(), item.getTitle()) || item.getTitle() == null)
+                    savedItem.setTitle(item.getTitle());
+
+                if (!Objects.equals(savedItem.getDescription(), item.getDescription()) || item.getDescription() == null)
+                    savedItem.setDescription(item.getDescription());
+
+                if (!Objects.equals(savedItem.getPriority(), item.getPriority()) || item.getPriority() == null)
+                    savedItem.setPriority(item.getPriority());
+
+                if (!Objects.equals(savedItem.getState(), item.getState()) || item.getState() == null)
+                    savedItem.setState(item.getState());
+
+                setUpdatedAt(LocalDateTime.now());
+
+                return;
+            }
+        }
     }
 
     public void removeItem(ItemEntity item) {
         this.items.remove(item);
+        setUpdatedAt(LocalDateTime.now());
     }
 
     public void clearItems() {
         this.items.clear();
+        setUpdatedAt(LocalDateTime.now());
     }
 
     @PrePersist

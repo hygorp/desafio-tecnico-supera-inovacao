@@ -15,7 +15,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode
 public class ItemEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
