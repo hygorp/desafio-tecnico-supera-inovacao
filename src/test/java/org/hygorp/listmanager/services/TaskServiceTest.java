@@ -8,10 +8,9 @@ import org.hygorp.listmanager.repositories.TaskRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -37,13 +36,13 @@ public class TaskServiceTest {
         myTaskTestId01 = taskRepository.save(new TaskEntity(
                 "Complete the collection",
                 "complete the leaf collection by the end of spring",
-                LocalDateTime.now().plusDays(22)
+                LocalDate.now().plusDays(22)
         )).getId();
 
         myTaskTestId02 = taskRepository.save(new TaskEntity(
                 "Website",
                 "finalize grandpa’s workshop website",
-                LocalDateTime.now().plusDays(7)
+                LocalDate.now().plusDays(7)
         )).getId();
     }
 
@@ -60,7 +59,7 @@ public class TaskServiceTest {
                 new TaskEntity(
                         "Dog's House",
                         "Build a new house for the dog before winter",
-                        LocalDateTime.now().plusDays(15)
+                        LocalDate.now().plusDays(15)
                 )
         ));
 
@@ -95,8 +94,8 @@ public class TaskServiceTest {
         ItemEntity item = new ItemEntity(
                 "Buy magnifying glass",
                 "go to the store on the weekend to buy",
-                ItemPriorityEnum.MEDIUM,
-                ItemStateEnum.TODO
+                ItemPriorityEnum.Media,
+                ItemStateEnum.Pendente
         );
 
         TaskEntity updatedTask = Assertions.assertDoesNotThrow(() -> taskService.addItem(savedTask.getId(), item));
@@ -114,15 +113,15 @@ public class TaskServiceTest {
         TaskEntity task = new TaskEntity(
                 "Dog's House",
                 "Build a new house for the dog before winter",
-                LocalDateTime.now().plusDays(15)
+                LocalDate.now().plusDays(15)
         );
 
         task.addItem(
                 new ItemEntity(
                         "Buy wood",
                         "go to the store on the weekend to buy",
-                        ItemPriorityEnum.MEDIUM,
-                        ItemStateEnum.TODO
+                        ItemPriorityEnum.Media,
+                        ItemStateEnum.Pendente
                 )
         );
 
@@ -131,16 +130,16 @@ public class TaskServiceTest {
 
         ItemEntity item = savedTask.getItems().iterator().next();
 
-        item.setPriority(ItemPriorityEnum.HIGH);
-        item.setState(ItemStateEnum.IN_PROGRESS);
+        item.setPriority(ItemPriorityEnum.Alta);
+        item.setState(ItemStateEnum.Fazendo);
 
         TaskEntity updatedTask = Assertions.assertDoesNotThrow(() -> taskService.updateItem(savedTask.getId(), item));
 
         ItemEntity updatedItem = updatedTask.getItems().iterator().next();
 
         Assertions.assertEquals("Buy wood", updatedItem.getTitle());
-        Assertions.assertEquals("HIGH", updatedItem.getPriority().toString());
-        Assertions.assertEquals("IN_PROGRESS", updatedItem.getState().toString());
+        Assertions.assertEquals("Alta", updatedItem.getPriority().toString());
+        Assertions.assertEquals("Fazendo", updatedItem.getState().toString());
     }
 
     @Test
@@ -150,14 +149,14 @@ public class TaskServiceTest {
         TaskEntity task = new TaskEntity(
                 "Dog's House",
                 "Build a new house for the dog before winter",
-                LocalDateTime.now().plusDays(15)
+                LocalDate.now().plusDays(15)
         );
 
         task.addItem(new ItemEntity(
                 "Buy Nails",
                 "go to the store on the weekend to buy nails",
-                ItemPriorityEnum.MEDIUM,
-                ItemStateEnum.TODO
+                ItemPriorityEnum.Media,
+                ItemStateEnum.Pendente
         ));
 
         TaskEntity savedTask = Assertions.assertDoesNotThrow(() -> taskService.save(task));
@@ -179,21 +178,21 @@ public class TaskServiceTest {
         TaskEntity task = new TaskEntity(
                 "Dog's House",
                 "Build a new house for the dog before winter",
-                LocalDateTime.now().plusDays(15)
+                LocalDate.now().plusDays(15)
         );
 
         task.addItem(new ItemEntity(
                 "Buy Woods",
                 "Go to the lumber yard on the weekend to buy the necessary items",
-                ItemPriorityEnum.MEDIUM,
-                ItemStateEnum.TODO
+                ItemPriorityEnum.Media,
+                ItemStateEnum.Pendente
         ));
 
         task.addItem(new ItemEntity(
                 "Buy Nails",
                 "go to the store on the weekend to buy nails",
-                ItemPriorityEnum.MEDIUM,
-                ItemStateEnum.TODO
+                ItemPriorityEnum.Media,
+                ItemStateEnum.Pendente
         ));
 
         TaskEntity savedTask = Assertions.assertDoesNotThrow(() -> taskService.save(task));
@@ -215,15 +214,15 @@ public class TaskServiceTest {
         task.addItem(new ItemEntity(
                 "Buy Woods",
                 "Go to the lumber yard on the weekend to buy the necessary items",
-                ItemPriorityEnum.MEDIUM,
-                ItemStateEnum.TODO
+                ItemPriorityEnum.Media,
+                ItemStateEnum.Pendente
         ));
 
         task.addItem(new ItemEntity(
                 "Buy Nails",
                 "go to the store on the weekend to buy nails",
-                ItemPriorityEnum.MEDIUM,
-                ItemStateEnum.TODO
+                ItemPriorityEnum.Media,
+                ItemStateEnum.Pendente
         ));
 
         TaskEntity savedTask = Assertions.assertDoesNotThrow(() -> taskService.save(task));
@@ -237,7 +236,7 @@ public class TaskServiceTest {
     @DisplayName("should find all tasks")
     @Order(8)
     void shouldFindAllTasks() {
-        Assertions.assertEquals(2, taskService.findAll(Pageable.ofSize(10)).getTotalElements());
+        Assertions.assertEquals(2, taskService.findAll().size());
     }
 
     @Test

@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -48,26 +48,26 @@ public class TaskResourceTest {
         TaskEntity task01 = new TaskEntity(
                 "Complete the collection",
                 "complete the leaf collection by the end of spring",
-                LocalDateTime.now().plusDays(22)
+                LocalDate.now().plusDays(22)
         );
         task01.addItem(new ItemEntity(
                 "Buy magnifying glass",
                 "go to the store on the weekend to buy",
-                ItemPriorityEnum.MEDIUM,
-                ItemStateEnum.TODO
+                ItemPriorityEnum.Media,
+                ItemStateEnum.Pendente
         ));
         myTaskTest01 = taskRepository.save(task01);
 
         TaskEntity task02 = new TaskEntity(
                 "Dog's House",
                 "Build a new house for the dog before winter",
-                LocalDateTime.now().plusDays(15)
+                LocalDate.now().plusDays(15)
         );
         task02.addItem(new ItemEntity(
                 "Buy Woods",
                 "Go to the lumber yard on the weekend to buy the necessary items",
-                ItemPriorityEnum.MEDIUM,
-                ItemStateEnum.TODO
+                ItemPriorityEnum.Media,
+                ItemStateEnum.Pendente
         ));
         myTaskTest02 = taskRepository.save(task02);
     }
@@ -86,7 +86,7 @@ public class TaskResourceTest {
                 .content(objectMapper.writeValueAsString(new TaskEntity(
                         "Website",
                         "finalize grandpa’s workshop website",
-                        LocalDateTime.now().plusDays(7)
+                        LocalDate.now().plusDays(7)
                 ))))
                 .andExpect(status().isCreated()).andReturn();
 
@@ -104,7 +104,7 @@ public class TaskResourceTest {
                 .content(objectMapper.writeValueAsString(new TaskEntity(
                         "Complete the leaf collection",
                         "complete the leaf collection by the end of spring",
-                        LocalDateTime.now().plusDays(22)
+                        LocalDate.now().plusDays(22)
                 ))))
                 .andExpect(status().isOk()).andReturn();
 
@@ -134,7 +134,7 @@ public class TaskResourceTest {
 
         JsonNode body = objectMapper.readTree(result.getResponse().getContentAsString());
 
-        Assertions.assertEquals(2, body.get("content").size());
+        Assertions.assertEquals(2, body.size());
     }
 
     @Test
@@ -160,8 +160,8 @@ public class TaskResourceTest {
                 .content(objectMapper.writeValueAsString(new ItemEntity(
                         "catalog",
                         "catalog harvested leaves",
-                        ItemPriorityEnum.HIGH,
-                        ItemStateEnum.IN_PROGRESS
+                        ItemPriorityEnum.Alta,
+                        ItemStateEnum.Fazendo
                 ))))
                 .andExpect(status().isOk()).andReturn();
 
@@ -177,8 +177,8 @@ public class TaskResourceTest {
         ItemEntity preUpdated = myTaskTest02.getItems().iterator().next();
 
         preUpdated.setTitle("Buy pine woods");
-        preUpdated.setPriority(ItemPriorityEnum.HIGH);
-        preUpdated.setState(ItemStateEnum.IN_PROGRESS);
+        preUpdated.setPriority(ItemPriorityEnum.Alta);
+        preUpdated.setState(ItemStateEnum.Fazendo);
 
         MvcResult result = mockMvc.perform(put("/api/v1/tasks/task/" + myTaskTest02.getId() + "/update-item")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -192,19 +192,19 @@ public class TaskResourceTest {
         ItemEntity updatedItem = objectMapper.treeToValue(items.get(0), ItemEntity.class);
 
         Assertions.assertEquals("Buy pine woods", updatedItem.getTitle());
-        Assertions.assertEquals(ItemPriorityEnum.HIGH, updatedItem.getPriority());
-        Assertions.assertEquals(ItemStateEnum.IN_PROGRESS, updatedItem.getState());
+        Assertions.assertEquals(ItemPriorityEnum.Alta, updatedItem.getPriority());
+        Assertions.assertEquals(ItemStateEnum.Fazendo, updatedItem.getState());
     }
 
     @Test
-    @DisplayName("should remove item from task and return 200 status")
+    @DisplayName("should delete item from task and return 200 status")
     @Order(8)
-    void shouldRemoveItemFromTaskAndReturn200Status() throws Exception {
+    void shouldDeleteItemFromTaskAndReturn200Status() throws Exception {
         Assertions.assertEquals(1, myTaskTest02.getItems().size());
 
         ItemEntity item = myTaskTest02.getItems().iterator().next();
 
-        MvcResult result = mockMvc.perform(delete("/api/v1/tasks/task/" + myTaskTest02.getId() + "/remove-item")
+        MvcResult result = mockMvc.perform(delete("/api/v1/tasks/task/" + myTaskTest02.getId() + "/delete-item")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(
                         item

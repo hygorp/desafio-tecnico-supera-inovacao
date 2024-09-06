@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -33,12 +33,12 @@ public class TaskEntity implements Serializable {
     private String description;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
-    private LocalDateTime updatedAt;
+    private LocalDate updatedAt;
 
     @Column(nullable = false)
-    private LocalDateTime expiresAt;
+    private LocalDate expiresAt;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
@@ -48,7 +48,7 @@ public class TaskEntity implements Serializable {
     )
     private Set<ItemEntity> items = new HashSet<>();
 
-    public TaskEntity(String title, String description, LocalDateTime expiresAt) {
+    public TaskEntity(String title, String description, LocalDate expiresAt) {
         this.title = title;
         this.description = description;
         this.expiresAt = expiresAt;
@@ -56,7 +56,7 @@ public class TaskEntity implements Serializable {
 
     public void addItem(ItemEntity item) {
         this.items.add(item);
-        setUpdatedAt(LocalDateTime.now());
+        setUpdatedAt(LocalDate.now());
     }
 
     public void updateItem(ItemEntity item) {
@@ -74,7 +74,7 @@ public class TaskEntity implements Serializable {
                 if (!Objects.equals(savedItem.getState(), item.getState()) || item.getState() == null)
                     savedItem.setState(item.getState());
 
-                setUpdatedAt(LocalDateTime.now());
+                setUpdatedAt(LocalDate.now());
 
                 return;
             }
@@ -83,21 +83,21 @@ public class TaskEntity implements Serializable {
 
     public void removeItem(ItemEntity item) {
         this.items.remove(item);
-        setUpdatedAt(LocalDateTime.now());
+        setUpdatedAt(LocalDate.now());
     }
 
     public void clearItems() {
         this.items.clear();
-        setUpdatedAt(LocalDateTime.now());
+        setUpdatedAt(LocalDate.now());
     }
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        createdAt = LocalDate.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        updatedAt = LocalDate.now();
     }
 }

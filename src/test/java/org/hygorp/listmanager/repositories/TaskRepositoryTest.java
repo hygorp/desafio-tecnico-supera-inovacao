@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -37,7 +37,7 @@ public class TaskRepositoryTest {
                 new TaskEntity(
                         "Dog's House",
                         "Build a new house for the dog before winter",
-                        LocalDateTime.now().plusDays(15)
+                        LocalDate.now().plusDays(15)
                 )
         ));
 
@@ -57,7 +57,7 @@ public class TaskRepositoryTest {
                 new TaskEntity(
                         "Dog's House",
                         "Build a new house for the dog before winter",
-                        LocalDateTime.now().plusDays(15)
+                        LocalDate.now().plusDays(15)
                 )
         ));
 
@@ -80,7 +80,7 @@ public class TaskRepositoryTest {
                 new TaskEntity(
                         "Dog's House",
                         "Build a new house for the dog before winter",
-                        LocalDateTime.now().plusDays(15)
+                        LocalDate.now().plusDays(15)
                 )
         ));
 
@@ -97,12 +97,12 @@ public class TaskRepositoryTest {
                 new TaskEntity(
                         "Dog's House",
                         "Build a new house for the dog before winter",
-                        LocalDateTime.now().plusDays(15)
+                        LocalDate.now().plusDays(15)
                 ),
                 new TaskEntity(
                         "School's Project",
                         "science fair presentation project, my group must make a replica of everest",
-                        LocalDateTime.now().plusDays(20)
+                        LocalDate.now().plusDays(20)
                 )
         )));
 
@@ -119,7 +119,7 @@ public class TaskRepositoryTest {
                 new TaskEntity(
                         "School's Project",
                         "science fair presentation project, my group must make a replica of everest",
-                        LocalDateTime.now().plusDays(20)
+                        LocalDate.now().plusDays(20)
                 )
         ));
 
