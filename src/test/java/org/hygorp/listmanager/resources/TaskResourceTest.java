@@ -40,6 +40,7 @@ public class TaskResourceTest {
 
     private TaskEntity myTaskTest01;
     private TaskEntity myTaskTest02;
+    private TaskEntity myTaskTest03;
 
     @BeforeEach
     void beforeEach() {
@@ -70,6 +71,19 @@ public class TaskResourceTest {
                 ItemStateEnum.Pendente
         ));
         myTaskTest02 = taskRepository.save(task02);
+
+        TaskEntity task03 = new TaskEntity(
+                "Software Project",
+                "Build a web application",
+                LocalDate.now().plusDays(4)
+        );
+        task03.addItem(new ItemEntity(
+                "Build Back-End",
+                "Use Spring-Boot",
+                ItemPriorityEnum.Alta,
+                ItemStateEnum.Completo
+        ));
+        myTaskTest03 = taskRepository.save(task03);
     }
 
     @AfterEach
@@ -82,12 +96,12 @@ public class TaskResourceTest {
     @Order(1)
     void shouldSaveTaskAndReturn201Status() throws Exception {
         MvcResult result = mockMvc.perform(post("/api/v1/tasks/save")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new TaskEntity(
-                        "Website",
-                        "finalize grandpa’s workshop website",
-                        LocalDate.now().plusDays(7)
-                ))))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new TaskEntity(
+                                "Website",
+                                "finalize grandpa’s workshop website",
+                                LocalDate.now().plusDays(7)
+                        ))))
                 .andExpect(status().isCreated()).andReturn();
 
         JsonNode body = objectMapper.readTree(result.getResponse().getContentAsString());
@@ -100,12 +114,12 @@ public class TaskResourceTest {
     @Order(2)
     void shouldUpdateTaskAndReturn200Status() throws Exception {
         MvcResult result = mockMvc.perform(put("/api/v1/tasks/update/" + myTaskTest01.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new TaskEntity(
-                        "Complete the leaf collection",
-                        "complete the leaf collection by the end of spring",
-                        LocalDate.now().plusDays(22)
-                ))))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new TaskEntity(
+                                "Complete the leaf collection",
+                                "complete the leaf collection by the end of spring",
+                                LocalDate.now().plusDays(22)
+                        ))))
                 .andExpect(status().isOk()).andReturn();
 
         JsonNode body = objectMapper.readTree(result.getResponse().getContentAsString());
@@ -129,20 +143,94 @@ public class TaskResourceTest {
     @Order(4)
     void shouldFindAllTasksAndReturn200Status() throws Exception {
         MvcResult result = mockMvc.perform(get("/api/v1/tasks/find-all")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         JsonNode body = objectMapper.readTree(result.getResponse().getContentAsString());
 
-        Assertions.assertEquals(2, body.size());
+        Assertions.assertEquals(3, body.size());
+    }
+
+    @Test
+    @DisplayName("should find tasks by title and return 200 status")
+    @Order(5)
+    void shouldFindTasksByTitleAndReturn200Status() throws Exception {
+        MvcResult result = mockMvc.perform(get("/api/v1/tasks/find-by-title")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("title", "Complete"))
+                .andExpect(status().isOk()).andReturn();
+
+        JsonNode body = objectMapper.readTree(result.getResponse().getContentAsString());
+
+        Assertions.assertEquals(1, body.size());
+    }
+
+    @Test
+    @DisplayName("should find all tasks by item priority and return 200 status")
+    @Order(6)
+    void shouldFindAllTasksByItemPriorityAndReturn200Status() throws Exception {
+        MvcResult result = mockMvc.perform((get("/api/v1/tasks/find-all-by-items-priority"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("priority", "Alta"))
+                .andExpect(status().isOk()).andReturn();
+
+        JsonNode body = objectMapper.readTree(result.getResponse().getContentAsString());
+
+        Assertions.assertEquals(1, body.size());
+    }
+
+    @Test
+    @DisplayName("should find all tasks by item state and return 200 status")
+    @Order(7)
+    void shouldFindAllTasksByItemStateAndReturn200Status() throws Exception {
+        MvcResult result = mockMvc.perform((get("/api/v1/tasks/find-all-by-items-state"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("state", "Completo"))
+                .andExpect(status().isOk()).andReturn();
+
+        JsonNode body = objectMapper.readTree(result.getResponse().getContentAsString());
+
+        Assertions.assertEquals(1, body.size());
+    }
+
+    @Test
+    @DisplayName("should find all tasks created at after date and return 200 status")
+    @Order(8)
+    void shouldFindAllTasksCreatedAtAfterDateAndReturn200Status() throws Exception {
+        MvcResult result = mockMvc.perform(get("/api/v1/tasks/find-all-by-created-after")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("date", "01-09-2024"))
+                .andExpect(status().isOk()).andReturn();
+
+        JsonNode body = objectMapper.readTree(result.getResponse().getContentAsString());
+
+        Assertions.assertEquals(3, body.size());
+    }
+
+    @Test
+    @DisplayName("should find all tasks created at between dates and return 200 status")
+    @Order(9)
+    void shouldFindAllTasksCreatedAtBetweenDatesAndReturn200Status() throws Exception {
+        myTaskTest03.setCreatedAt(LocalDate.of(2024, 1, 25));
+        taskRepository.save(myTaskTest03);
+
+        MvcResult result = mockMvc.perform(get("/api/v1/tasks/find-all-by-created-between")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("startDate", "01-01-2024")
+                        .param("endDate", "01-02-2024"))
+                        .andExpect(status().isOk()).andReturn();
+
+        JsonNode body = objectMapper.readTree(result.getResponse().getContentAsString());
+
+        Assertions.assertEquals(1, body.size());
     }
 
     @Test
     @DisplayName("should find task by id and return 200 status")
-    @Order(5)
+    @Order(10)
     void shouldFindTaskByIdAndReturn200Status() throws Exception {
         MvcResult result = mockMvc.perform(get("/api/v1/tasks/find-by-id/" + myTaskTest01.getId())
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         JsonNode body = objectMapper.readTree(result.getResponse().getContentAsString());
@@ -153,16 +241,16 @@ public class TaskResourceTest {
 
     @Test
     @DisplayName("should add item to task and return 200 status")
-    @Order(6)
+    @Order(11)
     void shouldAddItemToTaskAndReturn200Status() throws Exception {
         MvcResult result = mockMvc.perform(post("/api/v1/tasks/task/" + myTaskTest01.getId() + "/add-item")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new ItemEntity(
-                        "catalog",
-                        "catalog harvested leaves",
-                        ItemPriorityEnum.Alta,
-                        ItemStateEnum.Fazendo
-                ))))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new ItemEntity(
+                                "catalog",
+                                "catalog harvested leaves",
+                                ItemPriorityEnum.Alta,
+                                ItemStateEnum.Fazendo
+                        ))))
                 .andExpect(status().isOk()).andReturn();
 
         JsonNode body = objectMapper.readTree(result.getResponse().getContentAsString());
@@ -172,7 +260,7 @@ public class TaskResourceTest {
 
     @Test
     @DisplayName("should update item from task and return 200 status")
-    @Order(7)
+    @Order(12)
     void shouldUpdateItemFromTaskAndReturn200Status() throws Exception {
         ItemEntity preUpdated = myTaskTest02.getItems().iterator().next();
 
@@ -181,10 +269,10 @@ public class TaskResourceTest {
         preUpdated.setState(ItemStateEnum.Fazendo);
 
         MvcResult result = mockMvc.perform(put("/api/v1/tasks/task/" + myTaskTest02.getId() + "/update-item")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(
-                        preUpdated
-                )))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                preUpdated
+                        )))
                 .andExpect(status().isOk()).andReturn();
 
         JsonNode items = objectMapper.readTree(result.getResponse().getContentAsString()).get("items");
@@ -198,17 +286,17 @@ public class TaskResourceTest {
 
     @Test
     @DisplayName("should delete item from task and return 200 status")
-    @Order(8)
+    @Order(13)
     void shouldDeleteItemFromTaskAndReturn200Status() throws Exception {
         Assertions.assertEquals(1, myTaskTest02.getItems().size());
 
         ItemEntity item = myTaskTest02.getItems().iterator().next();
 
         MvcResult result = mockMvc.perform(delete("/api/v1/tasks/task/" + myTaskTest02.getId() + "/delete-item")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(
-                        item
-                )))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                item
+                        )))
                 .andExpect(status().isOk()).andReturn();
 
         JsonNode body = objectMapper.readTree(result.getResponse().getContentAsString());
@@ -218,7 +306,7 @@ public class TaskResourceTest {
 
     @Test
     @DisplayName("should clear items from task and return 200 status")
-    @Order(9)
+    @Order(14)
     void shouldClearItemsFromTaskAndReturn200Status() throws Exception {
         Assertions.assertEquals(1, myTaskTest02.getItems().size());
 

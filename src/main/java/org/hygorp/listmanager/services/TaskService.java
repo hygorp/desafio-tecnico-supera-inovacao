@@ -77,6 +77,10 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
+    public List<TaskEntity> findByTitle(String title) {
+        return taskRepository.findAllByTitleContainingIgnoreCase(title);
+    }
+
     public List<TaskEntity> findAllByItemsPriority(ItemPriorityEnum priority) {
         return taskRepository.findTaskByItemsPriority(priority);
     }

@@ -240,8 +240,15 @@ public class TaskServiceTest {
     }
 
     @Test
-    @DisplayName("should find task by id")
+    @DisplayName(("should find tasks by title"))
     @Order(9)
+    void shouldFindTasksByTitle() {
+        Assertions.assertEquals(1, taskService.findByTitle("Website").size());
+    }
+
+    @Test
+    @DisplayName("should find task by id")
+    @Order(10)
     void shouldFindTaskById() {
         TaskEntity taskFoundById = taskService.findById(myTaskTestId02);
 

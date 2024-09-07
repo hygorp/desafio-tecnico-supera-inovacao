@@ -14,6 +14,8 @@ import java.util.UUID;
 
 @Repository
 public interface TaskRepository extends JpaRepository<TaskEntity, UUID> {
+    List<TaskEntity> findAllByTitleContainingIgnoreCase(String title);
+
     @Query("SELECT t FROM tb_task t JOIN t.items i WHERE (:priority IS NULL OR i.priority = :priority)")
     List<TaskEntity> findTaskByItemsPriority(@Param("priority")ItemPriorityEnum priority);
 

@@ -48,6 +48,13 @@ public class TaskEntity implements Serializable {
     )
     private Set<ItemEntity> items = new HashSet<>();
 
+    public TaskEntity(UUID id, String title, String description, LocalDate expiresAt) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.expiresAt = expiresAt;
+    }
+
     public TaskEntity(String title, String description, LocalDate expiresAt) {
         this.title = title;
         this.description = description;
