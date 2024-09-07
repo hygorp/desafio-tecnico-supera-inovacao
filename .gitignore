@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### NEXTJS ###
+src/main/resources/static/list-manager-cli/node_modules
