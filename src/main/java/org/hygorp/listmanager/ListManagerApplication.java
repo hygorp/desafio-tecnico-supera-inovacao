@@ -56,9 +56,9 @@ public class ListManagerApplication implements CommandLineRunner {
         taskRepository.save(taskOne);
 
         TaskEntity taskTwo = new TaskEntity(
-                "Construi casa do PET",
+                "Construir casa do PET",
                 "O objetivo é construir uma casa confortável para o cachorro",
-                LocalDate.now().minusMonths(1)
+                LocalDate.now().plusMonths(1)
         );
         taskTwo.addItem(new ItemEntity(
                 "Comprar Madeiras",
